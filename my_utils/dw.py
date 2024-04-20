@@ -1,4 +1,31 @@
+from matplotlib import pyplot as plt
 from moviepy.editor import *
+
+
+class Pic:
+    def __init__(self, result_pos_list, fitness_list, answer):
+        self.result_pos_list = result_pos_list
+        self.fitness_list = fitness_list
+        self.answer = answer
+
+    def create_pic(self):
+        # 绘图
+        plt.rcParams['font.sans-serif'] = ['KaiTi']  # 指定默认字体解决中文显示问题
+        plt.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
+
+        # 创建绘图窗口
+        fig = plt.figure()
+        # 使用实心圆点，红色直线，在散点图中表示最优解的城市坐标集合
+        plt.plot(self.result_pos_list[:, 0], self.result_pos_list[:, 1], 'o-r')
+        plt.title("最优解路线")
+        plt.legend(["My legend"], fontsize="x-large")
+        fig.show()
+
+        fig = plt.figure()
+        plt.plot(self.fitness_list)
+        plt.title(f"适应度曲线  {self.answer}")
+        plt.legend(["My second legend"], fontsize="x-large")
+        fig.show()
 
 
 class Video:
@@ -18,7 +45,6 @@ class Video:
             for filename in file_names:
                 image = imageio.imread(filename)
                 writer.append_data(image)
-
 
 # class Draw(object):
 #     bound_x = []

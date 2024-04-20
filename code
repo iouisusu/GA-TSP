@@ -1,0 +1,18 @@
+for i in range(0, len(temp_list)-1, 2):
+    genes1 = copy_list(temp_list[i].genes)
+    genes2 = copy_list(temp_list[i + 1].genes)
+    index1 = random.randint(0, gene_len - 2)  # 相当于在交叉过程中选取基因片段
+    index2 = random.randint(index1, gene_len - 1)  # 随机生成两个index，保证index2>index1
+    pos1_recorder = {value: idx for idx, value in enumerate(genes1)}  # 记录初始基因片段对应的位置
+    pos2_recorder = {value: idx for idx, value in enumerate(genes2)}  # 解决交叉时产生的位置冲突问题
+    # 交叉
+    # 如果g2准备给g1的基因中存在冲突，那就把g1当前交叉位置的基因与g1中产生冲突的基因交换位置
+    for j in range(index1, index2):
+        value1, value2 = genes1[j], genes2[j]
+        pos1, pos2 = pos1_recorder[value2], pos2_recorder[value1]
+        genes1[j], genes1[pos1] = genes1[pos1], genes1[j]
+        genes2[j], genes2[pos2] = genes2[pos2], genes2[j]
+        pos1_recorder[value1], pos1_recorder[value2] = pos1, j
+        pos2_recorder[value1], pos2_recorder[value2] = j, pos2
+    new_gen.append(Individual(genes1))  # 交叉之后生成两个新个体，放到new_gen中
+    new_gen.append(Individual(genes2))

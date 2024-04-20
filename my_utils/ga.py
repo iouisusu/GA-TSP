@@ -55,7 +55,7 @@ class Individual:
             fitness += city_dist_mat[from_idx, to_idx]
         # 连接首尾
         fitness += city_dist_mat[self.genes[-1], self.genes[0]]
-        fitness = 1000.0 / max(fitness, 1e-3)  # 适应度倒数
+        fitness = 10000.0 / max(fitness, 1e-6)  # 适应度倒数
         return fitness
 
 
@@ -73,8 +73,11 @@ class Ga:
         self.fitness_list = []  # 所有代的最优解的适应度
         dis_mat = city_dist_mat.tolist()  # 将矩阵转换为可迭代的列表形式以便于贪心算法处理
         self.individual_list = [Individual(greedy_path) for
-                                greedy_path in self.greedy_init
+                                greedy_path in Ga.greedy_init
                                 (dis_mat)]
+
+        #    pa=ff()
+        #   self.individual_list[0]=Individual(pa)
         self.citys = pos_list
         # self.dw.bound_x = [np.min(self.citys[:, 0]), np.max(self.citys[:, 0])]  # 计算绘图时的X界
         # self.dw.bound_y = [np.min(self.citys[:, 1]), np.max(self.citys[:, 1])]  # 计算绘图时的Y界
@@ -129,10 +132,15 @@ class Ga:
         elite_individuals = sorted(self.individual_list, key=lambda x: x.fitness, reverse=True)[:elite_num]  # 适应度倒数
         non_elite_individuals = [indiv for indiv in self.individual_list if indiv not in elite_individuals]
 
-        group_num = 10
-        group_size = 20
-        # 每次遗传保存individual_num个个体，每组胜出group_winner个个体
-        group_winner = (individual_num - elite_num) // group_num
+        # group_num = 10
+        # group_size = 10
+        # # 每次遗传保存individual_num个个体，每组胜出group_winner个个体
+        # group_winner = (individual_num - elite_num) // group_num
+        # if (group_winner == 0):
+        #     group_winner = 1
+        group_winner = 2
+        group_size = 15
+        group_num = (individual_num - elite_num) // group_winner
 
         # 取出锦标赛每组获胜的个体作为选择的个体
         winners = []
@@ -185,7 +193,7 @@ class Ga:
             temp_list.pop(0)
         # 随机 打乱
         random.shuffle(temp_list)
-        for i in range(0, len(temp_list)-1, 2):
+        for i in range(0, len(temp_list) - 1, 2):
             genes1 = copy_list(temp_list[i].genes)
             genes2 = copy_list(temp_list[i + 1].genes)
             index1 = random.randint(0, gene_len - 2)  # 相当于在交叉过程中选取基因片段
@@ -215,22 +223,24 @@ class Ga:
 
     def mutate(self):
         # 仅对前mutate_prob的最差个体进行变异
-        sorted(self.individual_list, key=lambda x: x.fitness)
-        mutate_split = int(math.ceil(mutate_prob * len(self.individual_list)))
+        # sorted(self.individual_list, key=lambda x: x.fitness)
+        # mutate_split = int(math.ceil(mutate_prob * len(self.individual_list)))
+        # for individual in self.individual_list[:mutate_split]:
 
-        for individual in self.individual_list[:mutate_split]:
-            # 翻转切片法进行变异
-            old_gen = copy_list(individual.genes)
-            index1 = random.randint(0, gene_len - 2)
-            index2 = random.randint(index1, gene_len - 1)
-            mutate_genes = old_gen[index1:index2]
-            mutate_genes.reverse()
-            temp_gen = old_gen[:index1] + mutate_genes + old_gen[index2:]
-            temp_individual = Individual(temp_gen)
-            # 变异后适应度低的个体保留原来的
-            if temp_individual.fitness > individual.fitness:  # 适应度倒数
-                individual.genes = temp_gen
-                individual.fitness = temp_individual.fitness
+        for individual in self.individual_list:
+            if random.uniform(0, 1) < mutate_prob:
+                # 翻转切片法进行变异
+                old_gen = copy_list(individual.genes)
+                index1 = random.randint(0, gene_len - 2)
+                index2 = random.randint(index1, gene_len - 1)
+                mutate_genes = old_gen[index1:index2]
+                mutate_genes.reverse()
+                temp_gen = old_gen[:index1] + mutate_genes + old_gen[index2:]
+                temp_individual = Individual(temp_gen)
+                # 变异后适应度低的个体保留原来的
+                if temp_individual.fitness > individual.fitness:  # 适应度倒数
+                    individual.genes = temp_gen
+                    individual.fitness = temp_individual.fitness
         return
 
     @staticmethod
@@ -244,6 +254,13 @@ class Ga:
 
     # 产生下一代的过程：选择、交叉、变异
     def next_gen(self):
+        # cnttt = 0
+        # for t in self.individual_list:
+        #     print(cnttt, end='-')
+        #     cnttt = cnttt + 1
+        #     print(700.0 / t.fitness, end='-')
+        #     print(t.genes)
+        # print('------------------------')
         # 选择
         # print('选择前的个体数：\n', len(self.individual_list))
         # print("初始化：\n")
@@ -269,6 +286,8 @@ class Ga:
 
         # 适应度分析
         for individual in self.individual_list:
+            # print(individual.fitness, end='-')
+            # print(individual.genes)
             if individual.fitness > self.best.fitness:  # 适应度倒数
                 self.best = individual
 
@@ -284,10 +303,10 @@ class Ga:
         else:
             if gen <= 3.0 * gen_num / 4.0:
                 config.cross_prob = 0.95
-                config.mutate_prob = 0.3
+                config.mutate_prob = 0.08
             else:
-                config.cross_prob = 0.90
-                config.mutate_prob = 0.3
+                config.cross_prob = 0.92
+                config.mutate_prob = 0.15
 
     def train(self, pos_list):
         # 初代种群，在Individual中使用随即顺序构造
@@ -304,7 +323,7 @@ class Ga:
             # if i % 10 == 0:
             #     self.draw_current(result, pos_list, i+1)
             self.result_list.append(result)
-            self.fitness_list.append(1000.0 / max(self.best.fitness, 1e-3))  # 适应度倒数
+            self.fitness_list.append(10000.0 / max(self.best.fitness, 1e-6))  # 适应度倒数
 
         # self.re_draw()
         # self.dw.plt.show()

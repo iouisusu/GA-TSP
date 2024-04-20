@@ -5,7 +5,7 @@ import my_utils.ga_tsp_config as conf
 import my_utils.ga
 import matplotlib.pyplot as plt
 
-from my_utils.dw import Video
+from my_utils.dw import Video, Pic
 
 
 # 从tsp数据集中提取城市坐标
@@ -77,28 +77,15 @@ print("\nBest answer: \n", answer)
 # 此时result中为最优解的城市序列，在city中映射出坐标序列
 result_pos_list = city_pos_list[result, :]
 
-# 绘图
-plt.rcParams['font.sans-serif'] = ['KaiTi']  # 指定默认字体解决中文显示问题
-plt.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 
-# 创建绘图窗口
-fig = plt.figure()
-# 使用实心圆点，红色直线，在散点图中表示最优解的城市坐标集合
-plt.plot(result_pos_list[:, 0], result_pos_list[:, 1], 'o-r')
-plt.title("最优解路线")
-plt.legend(["My legend"], fontsize="x-large")
-fig.show()
-
-fig = plt.figure()
-plt.plot(fitness_list)
-plt.title("适应度曲线")
-plt.legend(["My second legend"], fontsize="x-large")
-fig.show()
-
+# 使用图片展示最优路径和适应度曲线
+pic = Pic(result_pos_list, fitness_list,answer)
+pic.create_pic()
 
 # 暂停程序，给时间来查看图形
 # turtle.done()
 
+# 使用视频动态展示最优路径寻找过程
 # video = Video(config.pic_path, config.vid_name, 15)
 # video.create_video()
 # print("ok!")
