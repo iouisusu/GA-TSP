@@ -76,7 +76,7 @@ class Ga:
                                 greedy_path in Ga.greedy_init
                                 (dis_mat)]
 
-        #    pa=ff()
+        #    pa=ff()就
         #   self.individual_list[0]=Individual(pa)
         self.citys = pos_list
         # self.dw.bound_x = [np.min(self.citys[:, 0]), np.max(self.citys[:, 0])]  # 计算绘图时的X界
