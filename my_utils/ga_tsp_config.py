@@ -22,7 +22,7 @@ data_arg.add_argument('--pos_dimension', type=int, default=2, help='pos_dimensio
 # 种群个体数（50-100）
 data_arg.add_argument('--individual_num', type=int, default=70, help='individual num')
 # 迭代次数
-data_arg.add_argument('--gen_num', type=int, default=1000, help='generation num')
+data_arg.add_argument('--gen_num', type=int, default=500, help='generation num')
 # 精英保留比例
 data_arg.add_argument('--elite_ratio', type=float, default=0.04, help='probability of elite')
 # 交叉概率

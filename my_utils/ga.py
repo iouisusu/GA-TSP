@@ -138,7 +138,7 @@ class Ga:
         # group_winner = (individual_num - elite_num) // group_num
         # if (group_winner == 0):
         #     group_winner = 1
-        group_winner = 2
+        group_winner = 3
         group_size = 15
         group_num = (individual_num - elite_num) // group_winner
 
@@ -302,10 +302,10 @@ class Ga:
             return
         else:
             if gen <= 3.0 * gen_num / 4.0:
-                config.cross_prob = 0.95
-                config.mutate_prob = 0.08
+                config.cross_prob = 0.94
+                config.mutate_prob = 0.10
             else:
-                config.cross_prob = 0.92
+                config.cross_prob = 0.90
                 config.mutate_prob = 0.15
 
     def train(self, pos_list):
@@ -319,6 +319,10 @@ class Ga:
             self.next_gen()
             result = copy_list(self.best.genes)
             result.append(result[0])
+            # 第i代的适应度分别图
+            if i == 400:
+                self.draw_current_fitness(i)
+
             # 画图
             # if i % 10 == 0:
             #     self.draw_current(result, pos_list, i+1)
@@ -328,6 +332,23 @@ class Ga:
         # self.re_draw()
         # self.dw.plt.show()
         return self.result_list, self.fitness_list
+
+    def draw_current_fitness(self, cnt):
+        cntss=0
+        for anindividual in self.individual_list:
+            print(f"第{cntss}的适应度：{anindividual.fitness}")
+            cntss = cntss + 1
+
+        fitness_values = [10000.0 / anindividual.fitness for anindividual in self.individual_list]
+        plt.figure(figsize=(10, 6))  # 设置图形大小
+        plt.ylim(9500, 10000)
+        plt.bar(range(1, len(fitness_values) + 1), fitness_values, color='skyblue', edgecolor='black')  # 绘制柱状图
+        plt.xlabel('Individual Index')  # X轴标签
+        plt.ylabel('Fitness Value')  # Y轴标签
+        plt.title(f'Fitness Distribution of Generation {cnt} (70 Individuals)')  # 图形标题，包含代数信息
+        plt.xticks(range(1, len(fitness_values) + 1))  # 显示每个个体的索引
+        plt.grid(True, axis='y', linestyle='--', linewidth=0.5)  # 添加网格线以增强可读性
+        plt.show()  # 显示图形
 
     def draw_current(self, best_res, pos_list, cnt):
         temp_pos_list = pos_list[best_res, :]

@@ -79,8 +79,11 @@ result_pos_list = city_pos_list[result, :]
 
 
 # 使用图片展示最优路径和适应度曲线
-pic = Pic(result_pos_list, fitness_list,answer)
+pic = Pic(result_pos_list, fitness_list, answer)
 pic.create_pic()
+
+# -------------------------------------------------------
+
 
 # 暂停程序，给时间来查看图形
 # turtle.done()
